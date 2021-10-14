@@ -10,12 +10,19 @@ d3.json('data.json').then((data) => {
     .domain([0, 2, 3])
     .range(['4 2', '2 2', null])
 
+  const nodeScale = d3.scaleLinear()
+    .domain([0, d3.max(data.nodes.map(node => node.influence))])
+    .range([8, 20])
+
+  const colorScale = d3.scaleOrdinal(d3.schemeCategory10)
+
   const simulation = d3.forceSimulation(data.nodes)
-    .force('charge', d3.forceManyBody().strength(-100))
+    .force('charge', d3.forceManyBody().strength(-125))
     .force('link', d3.forceLink(data.links)
       .id(d => d.id)
       .distance(75))
     .force('center', d3.forceCenter(300, 300))
+    .force('gravity', d3.forceManyBody().strength(30))
 
   const svg = d3.select('#target');
 
@@ -24,7 +31,7 @@ d3.json('data.json').then((data) => {
     .data(data.links)
     .enter()
     .append('path')
-    .attr('stroke', 'black')
+    .attr('stroke', '#999')
     .attr('stroke-width', (d) => linkWidthScale(d.weight))
     .attr('stroke-dasharray', (d) => linkDashScale(d.weight))
     .attr('fill', 'none')
@@ -43,10 +50,10 @@ d3.json('data.json').then((data) => {
     .data(data.nodes)
     .enter()
     .append('circle')
-    .attr('r', 15)
-    .attr('stroke', 'green')
+    .attr('r', (d) => nodeScale(d.influence))
+    .attr('stroke', '#ccc')
     .attr('stroke-width', 0.5)
-    .style('fill', 'blue')
+    .style('fill', (d) => colorScale(d.zone))
 
   const lineGenerator = d3.line()
 
