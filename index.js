@@ -90,6 +90,55 @@ d3.json('data.json').then((data) => {
       return `translate(${x}, ${y})`
     })
 
+  const card = svg
+    .append('g')
+    .attr('pointer-events', 'none')
+    .attr('display', 'none')
+
+  const cardBackground = card.append('rect')
+    .attr('width', 150)
+    .attr('height', 45)
+    .attr('fill', '#eee')
+    .attr('stroke', '#333')
+    .attr('rx', 4)
+
+  const cardTextName = card
+    .append('text')
+    .attr('transform', 'translate(8, 20)')
+    .attr('text', 'DEFAULT NAME')
+
+  const cardTextRole = card
+    .append('text')
+    .attr('font-size', 10)
+    .attr('transform', 'translate(8, 35)')
+    .attr('text', 'DEFAULT role')
+
+  let currentTarget = null;
+
+  node.on('mouseover', (d, item) => {
+    card.attr('display', 'block');
+
+    currentTarget = d.target;
+
+    cardTextName.text(item.name)
+    cardTextRole.text(item.role)
+
+    const nameWidth = cardTextName.node().getBBox().width
+    const positionWidth = cardTextRole.node().getBBox().width
+
+    const cardWith = Math.max(nameWidth, positionWidth)
+
+    cardBackground.attr('width', cardWith + 16)
+
+    simulation.alphaTarget(0).restart()
+
+  })
+
+  node.on('mouseout', () => {
+    currentTarget = null
+    card.attr('display', 'none')
+  })
+
   const lineGenerator = d3.line()
     .curve(d3.curveCardinal)
 
@@ -131,6 +180,15 @@ d3.json('data.json').then((data) => {
         [d.target.x, d.target.y],
       ])
     })
+
+    if (currentTarget) {
+      const radius = currentTarget.r.baseVal.value
+
+      const xPos = currentTarget.cx.baseVal.value + radius + 3
+      const yPos = currentTarget.cy.baseVal.value + radius + 3
+
+      card.attr('transform', `translate(${xPos}, ${yPos})`)
+    }
 
   })
 
