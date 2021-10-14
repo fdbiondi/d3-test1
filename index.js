@@ -61,6 +61,22 @@ d3.json('data.json').then((data) => {
         (d.source.y + d.target.y) / 2
       ]
 
+      if (d.overlap > 0) {
+        const distance = Math.sqrt(
+          Math.pow(d.target.x - d.source.x, 2) +
+          Math.pow(d.target.y - d.source.y, 2)
+        )
+
+        const slopeX = (d.target.x - d.source.x) / distance
+        const slopeY = (d.target.y - d.source.y) / distance
+
+        const curveSharpness = 8;
+        mid[0] += slopeY * curveSharpness
+        mid[1] -= slopeX * curveSharpness
+
+
+      }
+
       return lineGenerator([
         [d.source.x, d.source.y],
         mid,
