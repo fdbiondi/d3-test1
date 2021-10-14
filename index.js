@@ -55,9 +55,26 @@ d3.json('data.json').then((data) => {
     .attr('stroke-width', 0.5)
     .style('fill', (d) => colorScale(d.zone))
 
+  const imageContainer = svg
+    .selectAll('g.imageContainer')
+    .data(data.nodes)
+    .enter()
+    .append('g')
+
+  const image = imageContainer
+    .append('image')
+    .attr('height', (d) => nodeScale(d.influence))
+    .attr('width', (d) => nodeScale(d.influence))
+    .attr('transform', (d) => `translate(${-nodeScale(d.influence) / 2}, ${-nodeScale(d.influence) / 2})`)
+    .attr('href', (d, i) => `image/img-${i}.png`)
+
   const lineGenerator = d3.line()
 
   simulation.on('tick', () => {
+
+    imageContainer
+      .attr('transform', (d) => `translate(${d.x}, ${d.y})`)
+
     node
       .attr('cx', (d) => d.x)
       .attr('cy', (d) => d.y)
