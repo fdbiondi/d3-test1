@@ -3,7 +3,7 @@ d3.json('data.json').then((data) => {
   const linkWidthScale = d3
     .scaleLinear()
     .domain([0, d3.max(data.links.map(link => link.weight))])
-    .range([0.5, 3]);
+    .range([0.5, 1.25]);
 
   const linkDashScale = d3
     .scaleOrdinal()
@@ -59,18 +59,18 @@ d3.json('data.json').then((data) => {
     .attr('stroke-width', 0.5)
     .style('fill', (d) => colorScale(d.zone))
 
-  const imageContainer = svg
-    .selectAll('g.imageContainer')
-    .data(data.nodes)
-    .enter()
-    .append('g')
-
-  const image = imageContainer
-    .append('image')
-    .attr('height', (d) => nodeScale(d.influence))
-    .attr('width', (d) => nodeScale(d.influence))
-    .attr('transform', (d) => `translate(${-nodeScale(d.influence) / 2}, ${-nodeScale(d.influence) / 2})`)
-    .attr('href', (d, i) => `image/img-${i}.png`)
+  // const imageContainer = svg
+  //   .selectAll('g.imageContainer')
+  //   .data(data.nodes)
+  //   .enter()
+  //   .append('g')
+  //
+  // const image = imageContainer
+  //   .append('image')
+  //   .attr('height', (d) => nodeScale(d.influence))
+  //   .attr('width', (d) => nodeScale(d.influence))
+  //   .attr('transform', (d) => `translate(${-nodeScale(d.influence) / 2}, ${-nodeScale(d.influence) / 2})`)
+  //   .attr('href', (d, i) => `image/img-${i}.png`)
 
   const textContainer = svg
     .selectAll('g.label')
@@ -91,14 +91,15 @@ d3.json('data.json').then((data) => {
     })
 
   const lineGenerator = d3.line()
+    .curve(d3.curveCardinal)
 
   simulation.on('tick', () => {
 
     textContainer
       .attr('transform', (d) => `translate(${d.x}, ${d.y})`)
 
-    imageContainer
-      .attr('transform', (d) => `translate(${d.x}, ${d.y})`)
+    // imageContainer
+    //   .attr('transform', (d) => `translate(${d.x}, ${d.y})`)
 
     node
       .attr('cx', (d) => d.x)
