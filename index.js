@@ -1,9 +1,36 @@
 d3.json('data.json').then((data) => {
 
+  const drag = simulation => {
+    const dragStarted = (e, d) => {
+      if (!e.active) {
+        simulation.alphaTarget(0.3).restart()
+      }
+
+      d.x = e.x
+      d.y = e.y
+    }
+
+    const dragged = (e, d) => {
+      d.x = e.x
+      d.y = e.y
+    }
+
+    const dragEnded = (e, d) => {
+      if (!e.active) {
+        simulation.alphaTarget(0)
+      }
+    }
+
+    return d3.drag()
+      .on('start', dragStarted)
+      .on('drag', dragged)
+      .on('end', dragEnded)
+  }
+
   const linkWidthScale = d3
     .scaleLinear()
     .domain([0, d3.max(data.links.map(link => link.weight))])
-    .range([0.5, 1.25]);
+    .range([0.5, 1.25])
 
   const linkDashScale = d3
     .scaleOrdinal()
@@ -28,7 +55,7 @@ d3.json('data.json').then((data) => {
     .force('center', d3.forceCenter(300, 300))
     .force('gravity', d3.forceManyBody().strength(30))
 
-  const svg = d3.select('#target');
+  const svg = d3.select('#target')
 
   const link = svg
     .selectAll('path.link')
@@ -42,10 +69,10 @@ d3.json('data.json').then((data) => {
     .attr('marker-mid', (d) => {
       switch (d.type) {
         case 'SUPERVISORY':
-          return 'url(#markerArrow)';
+          return 'url(#markerArrow)'
 
         default:
-          return 'none';
+          return 'none'
       }
     })
 
@@ -58,6 +85,8 @@ d3.json('data.json').then((data) => {
     .attr('stroke', '#ccc')
     .attr('stroke-width', 0.5)
     .style('fill', (d) => colorScale(d.zone))
+
+  node.call(drag(simulation))
 
   // const imageContainer = svg
   //   .selectAll('g.imageContainer')
@@ -113,12 +142,12 @@ d3.json('data.json').then((data) => {
     .attr('transform', 'translate(8, 35)')
     .attr('text', 'DEFAULT role')
 
-  let currentTarget = null;
+  let currentTarget = null
 
   node.on('mouseover', (d, item) => {
-    card.attr('display', 'block');
+    card.attr('display', 'block')
 
-    currentTarget = d.target;
+    currentTarget = d.target
 
     cardTextName.text(item.name)
     cardTextRole.text(item.role)
@@ -169,7 +198,7 @@ d3.json('data.json').then((data) => {
         const slopeX = (d.target.x - d.source.x) / distance
         const slopeY = (d.target.y - d.source.y) / distance
 
-        const curveSharpness = 8;
+        const curveSharpness = 8
         mid[0] += slopeY * curveSharpness
         mid[1] -= slopeX * curveSharpness
       }
