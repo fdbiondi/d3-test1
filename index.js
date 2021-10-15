@@ -51,7 +51,29 @@ d3.json('data.json').then((data) => {
     .force('charge', d3.forceManyBody().strength(-125))
     .force('link', d3.forceLink(data.links)
       .id(d => d.id)
-      .distance(75))
+      .distance(75)
+      // .distance((d, i) => {
+      //   // if (i === 0) {
+      //   //   return 250
+      //   // } else {
+      //   //   return 50
+      //   // }
+      //
+      //   if (d.source.id === 0 || d.target.id === 0) {
+      //     return 75
+      //   } else {
+      //     return 50
+      //   }
+      // })
+      .strength(0.15)
+      // .strength((d) => {
+      //   if (d.source.id === 1 || d.target.id === 1) {
+      //     return 2
+      //   } else {
+      //     return 0.1
+      //   }
+      // })
+    )
     .force('center', d3.forceCenter(300, 300))
     .force('gravity', d3.forceManyBody().strength(30))
 
